@@ -1,12 +1,13 @@
 {
   "name": "ad-watcher",
   "version": "1.0.0",
-  "description": "Earn coins on freeminecrafthost automatically",
+  "description": "Watch ads on freeminecrafthost automatically",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "puppeteer": "^21.3.8"
+    "puppeteer": "^21.3.8",
+    "express": "^4.18.2"
   }
 }
