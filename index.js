@@ -1,31 +1,44 @@
+const express = require('express');
 const puppeteer = require('puppeteer');
 
-const EMAIL = process.env.EMAIL;
-const PASSWORD = process.env.PASSWORD;
+const app = express();
+const port = process.env.PORT || 3000;
 
-(async () => {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
+app.get('/watch', async (req, res) => {
+  try {
+    console.log('🔵 بدأ مشاهدة الإعلان');
 
-  const page = await browser.newPage();
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
 
-  await page.goto('https://billing.freeminecrafthost.com/login', { waitUntil: 'networkidle2' });
+    await page.goto('https://billing.freeminecrafthost.com/login', { waitUntil: 'networkidle2' });
 
-  await page.type('input[name="email"]', EMAIL);
-  await page.type('input[name="password"]', PASSWORD);
+    await page.type('input[name="email"]', process.env.EMAIL);
+    await page.type('input[name="password"]', process.env.PASSWORD);
 
-  await Promise.all([
-    page.click('button[type="submit"]'),
-    page.waitForNavigation({ waitUntil: 'networkidle2' })
-  ]);
+    await Promise.all([
+      page.click('button[type="submit"]'),
+      page.waitForNavigation({ waitUntil: 'networkidle2' })
+    ]);
 
-  await page.goto('https://billing.freeminecrafthost.com/earn/coins', { waitUntil: 'networkidle2' });
+    await page.goto('https://billing.freeminecrafthost.com/earn/coins', { waitUntil: 'networkidle2' });
 
-  console.log('🟡 يشاهد الإعلان 50 ثانية...');
-  await page.waitForTimeout(50000);
+    console.log('⏳ ينتظر 50 ثانية لمشاهدة الإعلان...');
+    await page.waitForTimeout(50000);
 
-  await browser.close();
-  console.log('✅ انتهى.');
-})();
+    await browser.close();
+
+    console.log('✅ تم الانتهاء من مشاهدة الإعلان');
+    res.send('تمت مشاهدة الإعلان بنجاح!');
+  } catch (error) {
+    console.error('❌ خطأ أثناء مشاهدة الإعلان:', error);
+    res.status(500).send('حدث خطأ: ' + error.message);
+  }
+});
+
+app.listen(port, () => {
+  console.log(`🚀 السيرفر شغال على بورت ${port}`);
+});
